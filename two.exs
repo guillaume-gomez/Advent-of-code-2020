@@ -1,8 +1,11 @@
 defmodule AdventOfCode.Two do
-    def count_password do
+    def read_file do
         rx = ~r/(\d+)\-(\d+) (\w): (\w+)/
-        passwords = Regex.scan(rx, File.read!("./assets/2.txt"))
-        IO.inspect passwords
+        Regex.scan(rx, File.read!("./assets/2.txt"))
+    end
+
+    def count_password do
+        passwords = read_file()
         result = Enum.reduce(passwords, 0, fn line, acc ->
             [_, min, max, letter, password] = line
             <<letter_ascii::utf8>> = letter
@@ -15,6 +18,21 @@ defmodule AdventOfCode.Two do
         end)
         IO.inspect result
     end
+
+    def count_password_bis do
+        passwords = read_file()
+        result = Enum.reduce(passwords, 0, fn line, acc ->
+            [_, min, max, letter, password] = line
+            min_index = String.to_integer(min) - 1
+            max_index = String.to_integer(max) - 1
+            if (letter == String.at(password, min_index)) != (letter == String.at(password, max_index)) do
+                acc + 1
+            else
+                acc
+            end
+        end)
+        IO.inspect result
+    end
 end
 
-AdventOfCode.Two.count_password
+AdventOfCode.Two.count_password_bis
