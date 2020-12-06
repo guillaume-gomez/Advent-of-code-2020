@@ -4,7 +4,7 @@ defmodule AdventOfCode.Five do
         |> String.split("\n")
     end
 
-    def binary_to_decimal_bording_pass(boarding_pass) do
+    defp binary_to_decimal_bording_pass(boarding_pass) do
         row = String.slice(boarding_pass, 0, 7)
         |> to_charlist
         |> compute(0, 127)
@@ -16,13 +16,17 @@ defmodule AdventOfCode.Five do
         [row, column]
     end
 
-    def convert_binary_boarding do
+    defp seat_id(row, column) do
+        (row * 8 + column)
+    end
+
+    defp convert_binary_boarding do
         Enum.map(read_file(), fn x -> binary_to_decimal_bording_pass(x) end)
     end
 
     def highest_seat_id do
         Enum.reduce(convert_binary_boarding(), 0, fn [row, column], acc ->
-            seat_id = (row * 8 + column)
+            seat_id = seat_id(row, column)
             if acc < seat_id do
                 seat_id
             else
@@ -31,7 +35,17 @@ defmodule AdventOfCode.Five do
         end)
     end
 
-    def compute([letter_charlist|[]], min, max) do
+    def find_my_seat do
+        seats = Enum.map(convert_binary_boarding(), fn [row, column] -> seat_id(row, column) end)
+        
+        min_seat_id = Enum.min(seats)
+        max_seat_id = Enum.max(seats)
+        
+        seat_in_charlist = Enum.to_list(min_seat_id..max_seat_id) -- seats
+        hd(seat_in_charlist)
+    end
+
+    defp compute([letter_charlist|[]], min, max) do
         letter = List.to_string([letter_charlist])
         #IO.inspect "#{min}, #{max} -> #{letter}"
         case letter do
@@ -42,7 +56,7 @@ defmodule AdventOfCode.Five do
         end
     end
 
-    def compute([letter_charlist | rest], min, max) do
+    defp compute([letter_charlist | rest], min, max) do
         letter = List.to_string([letter_charlist])
         case letter do
             "B" -> compute(rest, 1 + div(min + max, 2), max)
@@ -55,4 +69,4 @@ defmodule AdventOfCode.Five do
 end
 
 IO.puts "first half answer : #{AdventOfCode.Five.highest_seat_id}"
-#IO.puts "second half answer : #{AdventOfCode.Five.check_passports_bis}"
+IO.puts "second half answer : #{AdventOfCode.Five.find_my_seat}"
