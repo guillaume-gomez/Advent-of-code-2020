@@ -1,4 +1,6 @@
 defmodule AdventOfCode.Nine do
+    @size 25
+
     defp read_file do
         File.read!("./assets/9.txt")
         |> String.split("\n")
@@ -7,7 +9,13 @@ defmodule AdventOfCode.Nine do
 
     def christmas_weakness do
         read_file()
-        |> iterate(25)
+        |> iterate(@size)
+    end
+
+    def final_step_christmas_weakness do
+        inputs = read_file()
+        value = iterate(inputs, @size)
+        find_contiguous(inputs, value)
     end
 
     defp preambles(inputs, size) do
@@ -40,7 +48,31 @@ defmodule AdventOfCode.Nine do
             true -> iterate(tail, calculated_input(tail, size), size)
         end
     end
+
+    defp find_contiguous(inputs, value) do
+        find_contiguous(inputs, inputs, 0, [], value)
+    end
+
+    defp find_contiguous([_inputsHead | inputsTail], _current_list, acc, _visited, value) when acc > value do
+        find_contiguous(inputsTail, inputsTail, 0, [], value)
+    end
+
+    defp find_contiguous(inputs, [subInputsHead | subInputsTail], acc, visited, value) when acc < value do
+        find_contiguous(inputs, subInputsTail, acc + subInputsHead, [subInputsHead | visited], value)
+    end
+
+    defp find_contiguous(_inputs, _subInputs,  acc, visited, value) when acc == value do
+        Enum.min(visited) + Enum.max(visited)
+    end
+
+    defp find_contiguous([], _, _acc, _visited,  _value) do
+        {:error}
+    end
+
+    defp find_contiguous(_, [], _acc, _visited, _value) do
+        {:error}
+    end
 end
 
 IO.puts "first half answer : #{AdventOfCode.Nine.christmas_weakness}"
-#IO.puts "second half answer : #{AdventOfCode.Nine.corrupted_program}"
+IO.puts "second half answer : #{AdventOfCode.Nine.final_step_christmas_weakness}"
