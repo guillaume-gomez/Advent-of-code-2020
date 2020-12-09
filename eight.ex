@@ -25,19 +25,19 @@ defmodule AdventOfCode.Eight do
         acc
     end
 
-    def loop(instructions) do
+    defp loop(instructions) do
         loop(instructions, 0, 0, [], 1)
     end
 
-    def loop(_, index, acc, _, 650) do
+    defp loop(_, index, acc, _, 650) do
         { :error, index, acc }
     end
 
-    def loop(_, :end, acc, _visited, _max_iteration) do
+    defp loop(_, :end, acc, _visited, _max_iteration) do
         { :end, :end, acc }
     end
 
-    def loop(instructions, index, acc, visited, max_iteration) do
+    defp loop(instructions, index, acc, visited, max_iteration) do
         { new_index, new_acc } = Map.get(instructions, index) 
             |> execute(index, acc)
         case new_index in visited do
@@ -46,13 +46,13 @@ defmodule AdventOfCode.Eight do
         end
     end
 
-    def collect_corrupted_command(instructions) do
+    defp collect_corrupted_command(instructions) do
         Enum.filter(instructions, fn { _key, {instruction, _ }} -> instruction == :nop || instruction == :jmp end)
     end
 
-    def find_corrupted_program(instructions, collect_corrupted_command) do
+    defp find_corrupted_program(instructions, collect_corrupted_command) do
         Enum.map(collect_corrupted_command, fn {index, instruction} -> 
-            instructions_modified = Map.replace(instructions, index, invert_command(instruction))
+            instructions_modified = Map.put(instructions, index, invert_command(instruction))
             loop(instructions_modified, 0, 0, [], 1)
         end)
         |> Enum.find(fn {tuple_result, _, _acc} ->
@@ -60,27 +60,27 @@ defmodule AdventOfCode.Eight do
         end)
     end
 
-    def execute({ :nop, _arg }, index, acc) do
+    defp execute({ :nop, _arg }, index, acc) do
         { index + 1 , acc }
     end
 
-    def execute({ :acc, arg }, index, acc) do
+    defp execute({ :acc, arg }, index, acc) do
         { index + 1, acc + arg}
     end
 
-    def execute({ :jmp, arg }, index, acc) do
+    defp execute({ :jmp, arg }, index, acc) do
         { index + arg, acc }
     end
 
-    def execute(_instruction, _index, acc) do
+    defp execute(_instruction, _index, acc) do
         { :end, acc }
     end
 
-    def invert_command({ :nop, arg }) do
+    defp invert_command({ :nop, arg }) do
         { :jmp, arg }
     end
 
-    def invert_command({ :jmp, arg }) do
+    defp invert_command({ :jmp, arg }) do
         { :nop, arg }
     end
 
