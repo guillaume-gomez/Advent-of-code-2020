@@ -21,13 +21,12 @@ defmodule AdventOfCode.Thirteen do
         bus_id * (bus_timestamp - timestamp_number)
     end
 
-    def find_next_timestamp(bus_id, timestamp)  do
+    defp find_next_timestamp(bus_id, timestamp)  do
         [bus_id * div(timestamp, bus_id) + bus_id, bus_id]
     end
 
-
     def problem_bis do
-        [timestamp, notes] = read_file()
+        [_timestamp, notes] = read_file()
 
         busses = String.split(notes, ",")
         |> Enum.map(fn x ->
@@ -40,16 +39,7 @@ defmodule AdventOfCode.Thirteen do
         next_sequence(busses)
     end
 
-    def remainder(mods, remainders) do
-        max = Enum.reduce(mods, fn x,acc -> x*acc end)
-        Enum.zip(mods, remainders)
-        |> Enum.map(fn {m,r} -> Enum.take_every(r..max, m) |> MapSet.new end)
-        |> Enum.reduce(fn set,acc -> MapSet.intersection(set, acc) end)
-        |> MapSet.to_list
-    end
-
-
-    def next_sequence(busses) do
+    defp next_sequence(busses) do
         busses
         |> Enum.with_index()
         |> Enum.reduce({0, 1}, &add_to_sequence/2)
@@ -70,9 +60,7 @@ defmodule AdventOfCode.Thirteen do
         div(a * b, Integer.gcd(a, b))
     end
 
-
-
 end
 
-# IO.puts "first half answer : #{AdventOfCode.Thirteen.problem}"
-# IO.puts "second half answer : #{AdventOfCode.Thirteen.problem_bis}"
+IO.puts "first half answer : #{AdventOfCode.Thirteen.problem}"
+IO.puts "second half answer : #{AdventOfCode.Thirteen.problem_bis}"
