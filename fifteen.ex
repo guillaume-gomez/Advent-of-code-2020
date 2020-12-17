@@ -5,43 +5,40 @@ defmodule AdventOfCode.Fifteen do
         |> Enum.map(fn x -> String.to_integer(x) end)
     end
 
-    def find2020th do
+    defp findNth(n) do
         input = read_file()
         # setting the input number at starting number
         numbers_map = Enum.with_index(input, 1)
         |> Enum.reduce(%{}, fn {x, index}, acc ->
             Map.put(acc, x, index)
         end)
-
-        find2020th(numbers_map, length(input)+1, List.last(input))
+        apply(AdventOfCode.Fifteen, String.to_atom("find#{n}th"), [numbers_map, length(input)+1, List.last(input)])
     end
 
-    defp find2020th(_numbers_map, 2021, spoken) do
+    def find2020th do
+        findNth(2020)
+    end
+
+    def find3000000th do
+        findNth(3000000)
+    end
+
+    def find2020th(_numbers_map, 2021, spoken) do
         spoken
     end
 
-    defp find2020th(numbers_map, turn, spoken) do
+    def find2020th(numbers_map, turn, spoken) do
         { new_spoken, new_numbers_map } = play_turn(numbers_map, turn, spoken)
         find2020th(new_numbers_map, turn + 1, new_spoken)
     end
 
-    def find3000000th do
-        input = read_file()
-        # setting the input number at starting number
-        numbers_map = Enum.with_index(input, 1)
-        |> Enum.reduce(%{}, fn {x, index}, acc ->
-            Map.put(acc, x, index)
-        end)
 
-        find3000000th(numbers_map, length(input)+1, List.last(input))
-    end
-
-    defp find3000000th(numbers_map, turn, spoken) do
+    def find3000000th(numbers_map, turn, spoken) do
         { new_spoken, new_numbers_map } = play_turn(numbers_map, turn, spoken)
         find3000000th(new_numbers_map, turn + 1, new_spoken)
     end
     
-    defp find3000000th(_numbers_map, 30000001, spoken) do
+    def find3000000th(_numbers_map, 30000001, spoken) do
         spoken
     end
 
